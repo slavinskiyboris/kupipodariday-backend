@@ -13,8 +13,21 @@ import {
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { HashService } from 'src/auth/hash.service';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserSearchDto } from './dto/user-search.dto';
+import { 
+  ApiTags, 
+  ApiOperation, 
+  ApiResponse, 
+  ApiParam, 
+  ApiQuery, 
+  ApiBearerAuth 
+} from '@nestjs/swagger';
 import { User } from './user.entity';
 
+@ApiTags('users')
+@ApiBearerAuth('JWT')
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(
@@ -22,20 +35,43 @@ export class UsersController {
     private readonly hashService: HashService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Получение информации о текущем пользователе' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Информация о пользователе',
+    type: User
+  })
+  @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
   @Get('me')
   async fetchCurrentUser(@Request() req) {
     return this.userService.getUserByQuery({ where: { id: req.user.userId } });
   }
 
+  @ApiOperation({ summary: 'Получение информации о пользователе по имени' })
+  @ApiParam({ name: 'username', description: 'Имя пользователя' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Информация о пользователе',
+    type: User
+  })
+  @ApiResponse({ status: 404, description: 'Пользователь не найден' })
+  @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
   @Get(':username')
   async fetchUserByName(@Param('username') username: string) {
     return this.userService.getUserByQuery({ where: { username } });
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Обновление профиля текущего пользователя' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Профиль успешно обновлен',
+    type: User
+  })
+  @ApiResponse({ status: 400, description: 'Некорректные данные' })
+  @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
+  @ApiResponse({ status: 409, description: 'Данные (email, username) уже используются' })
   @Put('me')
-  async updateMyProfile(@Request() req, @Body() profileChanges: Partial<User>) {
+  async updateMyProfile(@Request() req, @Body() profileChanges: UpdateUserDto) {
     await this.userService.validateUniqueFields(req.user.userId, profileChanges);
 
     if (profileChanges.password) {
@@ -48,17 +84,34 @@ export class UsersController {
     return this.userService.getUserByQuery({ where: { id: req.user.userId } });
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Поиск пользователей' })
+  @ApiQuery({ name: 'query', description: 'Поисковый запрос' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Список пользователей',
+    type: [User]
+  })
+  @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
   @Get()
-  async searchAccounts(@Query('query') searchTerm: string) {
-    return this.userService.searchUsers(searchTerm);
+  async searchAccounts(@Query() searchParams: UserSearchDto) {
+    return this.userService.searchUsers(searchParams.query);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Обновление профиля по ID' })
+  @ApiParam({ name: 'id', description: 'ID пользователя' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Профиль успешно обновлен',
+    type: User
+  })
+  @ApiResponse({ status: 400, description: 'Некорректные данные' })
+  @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен' })
+  @ApiResponse({ status: 409, description: 'Данные (email, username) уже используются' })
   @Put(':id')
   async updateUserAccount(
     @Param('id') userId: number,
-    @Body() profileChanges: Partial<User>,
+    @Body() profileChanges: UpdateUserDto,
     @Request() req,
   ) {
     if (userId !== req.user.userId) {
@@ -77,7 +130,11 @@ export class UsersController {
     return this.userService.getUserByQuery({ where: { id: userId } });
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Удаление пользователя' })
+  @ApiParam({ name: 'id', description: 'ID пользователя' })
+  @ApiResponse({ status: 200, description: 'Пользователь удален' })
+  @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
+  @ApiResponse({ status: 403, description: 'Доступ запрещен' })
   @Delete(':id')
   async removeAccount(@Param('id') userId: number, @Request() req) {
     if (userId !== req.user.userId) {

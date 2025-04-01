@@ -11,7 +11,20 @@ import { OffersService } from './offers.service';
 import { WishesService } from '../wishes/wishes.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MailerService } from '../mailer/mailer.service';
+import { CreateOfferDto } from './dto/create-offer.dto';
+import { User } from '../users/user.entity';
+import { Wish } from '../wishes/wish.entity';
+import { 
+  ApiTags, 
+  ApiOperation, 
+  ApiResponse, 
+  ApiBearerAuth 
+} from '@nestjs/swagger';
+import { Offer } from './offer.entity';
 
+@ApiTags('offers')
+@ApiBearerAuth('JWT')
+@UseGuards(JwtAuthGuard)
 @Controller('offers')
 export class OffersController {
   constructor(
@@ -20,9 +33,18 @@ export class OffersController {
     private readonly mailService: MailerService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Создание предложения о вкладе в подарок' })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Предложение успешно создано',
+    type: Offer
+  })
+  @ApiResponse({ status: 400, description: 'Некорректные данные' })
+  @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
+  @ApiResponse({ status: 403, description: 'Нельзя скидываться на собственные подарки' })
+  @ApiResponse({ status: 409, description: 'Сумма превышает стоимость подарка' })
   @Post()
-  async submitContribution(@Body() contributionData, @Request() req) {
+  async submitContribution(@Body() contributionData: CreateOfferDto, @Request() req) {
     const targetWish = await this.wishService.getWishById({
       where: { id: contributionData.item },
     });
@@ -38,9 +60,14 @@ export class OffersController {
       );
     }
 
-    contributionData.user = req.user.userId;
+    const offerData = {
+      amount: contributionData.amount,
+      hidden: contributionData.hidden,
+      user: { id: req.user.userId } as User,
+      item: { id: contributionData.item } as Wish
+    };
 
-    const savedContribution = await this.offerService.create(contributionData);
+    const savedContribution = await this.offerService.create(offerData);
 
     // Send email to the wish owner
     await this.mailService.sendMail({
