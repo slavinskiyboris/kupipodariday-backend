@@ -1,16 +1,18 @@
-import { 
-  IsNotEmpty, 
-  IsString, 
-  MinLength, 
-  MaxLength, 
-  IsEmail, 
-  IsOptional 
+import {
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  MaxLength,
+  IsEmail,
+  IsOptional,
 } from 'class-validator';
 
 export class SignupDto {
   @IsNotEmpty({ message: 'Имя пользователя не может быть пустым' })
   @IsString({ message: 'Имя пользователя должно быть строкой' })
-  @MaxLength(30, { message: 'Имя пользователя не может быть длиннее 30 символов' })
+  @MaxLength(30, {
+    message: 'Имя пользователя не может быть длиннее 30 символов',
+  })
   username: string;
 
   @IsNotEmpty({ message: 'Пароль не может быть пустым' })
@@ -24,10 +26,12 @@ export class SignupDto {
 
   @IsOptional()
   @IsString({ message: 'Информация о пользователе должна быть строкой' })
-  @MaxLength(200, { message: 'Информация о пользователе не может быть длиннее 200 символов' })
+  @MaxLength(200, {
+    message: 'Информация о пользователе не может быть длиннее 200 символов',
+  })
   about?: string;
 
   @IsOptional()
   @IsString({ message: 'URL аватара должен быть строкой' })
   avatar?: string;
-} 
+}

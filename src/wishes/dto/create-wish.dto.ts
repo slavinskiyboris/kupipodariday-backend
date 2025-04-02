@@ -1,16 +1,18 @@
-import { 
-  IsNotEmpty, 
-  IsString, 
-  MaxLength, 
-  IsUrl, 
-  IsNumber, 
-  Min
+import {
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  IsUrl,
+  IsNumber,
+  Min,
 } from 'class-validator';
 
 export class CreateWishDto {
   @IsNotEmpty({ message: 'Название подарка не может быть пустым' })
   @IsString({ message: 'Название подарка должно быть строкой' })
-  @MaxLength(250, { message: 'Название подарка не может быть длиннее 250 символов' })
+  @MaxLength(250, {
+    message: 'Название подарка не может быть длиннее 250 символов',
+  })
   name: string;
 
   @IsNotEmpty({ message: 'Ссылка на подарок не может быть пустой' })
@@ -30,4 +32,4 @@ export class CreateWishDto {
   @IsString({ message: 'Описание должно быть строкой' })
   @MaxLength(1024, { message: 'Описание не может быть длиннее 1024 символов' })
   description: string;
-} 
+}

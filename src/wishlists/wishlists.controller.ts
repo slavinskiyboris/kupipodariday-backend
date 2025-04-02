@@ -15,12 +15,12 @@ import { WishlistsService } from './wishlists.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiParam, 
-  ApiBearerAuth 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Wishlist } from './wishlist.entity';
 
@@ -32,10 +32,10 @@ export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   @ApiOperation({ summary: 'Создание списка подарков' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Список подарков успешно создан',
-    type: Wishlist
+    type: Wishlist,
   })
   @ApiResponse({ status: 400, description: 'Некорректные данные' })
   @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
@@ -48,10 +48,10 @@ export class WishlistsController {
   }
 
   @ApiOperation({ summary: 'Получение всех списков подарков' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Список всех списков подарков',
-    type: [Wishlist]
+    type: [Wishlist],
   })
   @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
   @Get()
@@ -61,10 +61,10 @@ export class WishlistsController {
 
   @ApiOperation({ summary: 'Получение информации о списке подарков по ID' })
   @ApiParam({ name: 'id', description: 'ID списка подарков' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Информация о списке подарков',
-    type: Wishlist
+    type: Wishlist,
   })
   @ApiResponse({ status: 404, description: 'Список подарков не найден' })
   @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
@@ -79,9 +79,9 @@ export class WishlistsController {
 
   @ApiOperation({ summary: 'Обновление списка подарков' })
   @ApiParam({ name: 'id', description: 'ID списка подарков' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Список подарков успешно обновлен'
+  @ApiResponse({
+    status: 200,
+    description: 'Список подарков успешно обновлен',
   })
   @ApiResponse({ status: 400, description: 'Некорректные данные' })
   @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })

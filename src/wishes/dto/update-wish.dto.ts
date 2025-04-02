@@ -1,16 +1,18 @@
-import { 
-  IsString, 
-  MaxLength, 
-  IsUrl, 
-  IsNumber, 
+import {
+  IsString,
+  MaxLength,
+  IsUrl,
+  IsNumber,
   Min,
-  IsOptional
+  IsOptional,
 } from 'class-validator';
 
 export class UpdateWishDto {
   @IsOptional()
   @IsString({ message: 'Название подарка должно быть строкой' })
-  @MaxLength(250, { message: 'Название подарка не может быть длиннее 250 символов' })
+  @MaxLength(250, {
+    message: 'Название подарка не может быть длиннее 250 символов',
+  })
   name?: string;
 
   @IsOptional()
@@ -35,4 +37,4 @@ export class UpdateWishDto {
   @IsNumber({}, { message: 'Сумма должна быть числом' })
   @Min(0, { message: 'Сумма не может быть отрицательной' })
   raised?: number;
-} 
+}

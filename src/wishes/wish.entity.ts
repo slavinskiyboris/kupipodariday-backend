@@ -21,11 +21,17 @@ export class Wish {
   @Column({ length: 250 })
   name: string;
 
-  @ApiProperty({ example: 'https://example.com/iphone', description: 'Ссылка на подарок' })
+  @ApiProperty({
+    example: 'https://example.com/iphone',
+    description: 'Ссылка на подарок',
+  })
   @Column()
   link: string;
 
-  @ApiProperty({ example: 'https://example.com/images/iphone.jpg', description: 'Ссылка на изображение подарка' })
+  @ApiProperty({
+    example: 'https://example.com/images/iphone.jpg',
+    description: 'Ссылка на изображение подарка',
+  })
   @Column()
   image: string;
 
@@ -33,19 +39,22 @@ export class Wish {
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 
-  @ApiProperty({ example: 1500.00, description: 'Собранная сумма' })
+  @ApiProperty({ example: 1500.0, description: 'Собранная сумма' })
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
   raised: number;
 
-  @ApiProperty({ description: 'Владелец подарка' })
-  @ManyToOne(() => User, (user) => user.wishes, { lazy: true })
+  @ApiProperty({ description: 'Владелец подарка', type: () => User })
+  @ManyToOne(() => User, (user) => user.wishes, { lazy: true, eager: false })
   owner: User;
 
-  @ApiProperty({ example: 'Очень хочу новый Iphone', description: 'Описание подарка' })
+  @ApiProperty({
+    example: 'Очень хочу новый Iphone',
+    description: 'Описание подарка',
+  })
   @Column({ length: 1024 })
   description: string;
 
-  @ApiProperty({ description: 'Предложения по скидыванию на подарок' })
+  @ApiProperty({ description: 'Предложения по скидыванию на подарок', type: () => [Offer] })
   @OneToMany(() => Offer, (offer) => offer.item, { lazy: true })
   offers: Offer[];
 
@@ -53,11 +62,17 @@ export class Wish {
   @Column('int', { default: 0 })
   copied: number;
 
-  @ApiProperty({ example: '2023-01-01T00:00:00Z', description: 'Дата создания' })
+  @ApiProperty({
+    example: '2023-01-01T00:00:00Z',
+    description: 'Дата создания',
+  })
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({ example: '2023-01-02T00:00:00Z', description: 'Дата обновления' })
+  @ApiProperty({
+    example: '2023-01-02T00:00:00Z',
+    description: 'Дата обновления',
+  })
   @UpdateDateColumn()
   updatedAt: Date;
 }

@@ -12,10 +12,7 @@ export class UsersService {
 
   async registerUser(userData: Partial<User>): Promise<User> {
     const existingAccount = await this.userRepo.findOne({
-      where: [
-        { email: userData.email },
-        { username: userData.username },
-      ],
+      where: [{ email: userData.email }, { username: userData.username }],
     });
 
     if (existingAccount) {
@@ -35,15 +32,17 @@ export class UsersService {
     return this.userRepo.findOne(searchParams);
   }
 
-  async listAllUsers(searchOptions: FindManyOptions<User> = {}): Promise<User[]> {
+  async listAllUsers(
+    searchOptions: FindManyOptions<User> = {},
+  ): Promise<User[]> {
     return this.userRepo.find(searchOptions);
   }
 
   async searchUsers(searchText: string): Promise<User[]> {
     return this.userRepo.find({
       where: [
-        { username: Like(`%${searchText}%`) }, 
-        { email: Like(`%${searchText}%`) }
+        { username: Like(`%${searchText}%`) },
+        { email: Like(`%${searchText}%`) },
       ],
     });
   }
@@ -62,8 +61,8 @@ export class UsersService {
   ): Promise<void> {
     const existingAccount = await this.userRepo.findOne({
       where: [
-        { email: updatedFields.email }, 
-        { username: updatedFields.username }
+        { email: updatedFields.email },
+        { username: updatedFields.username },
       ],
     });
 

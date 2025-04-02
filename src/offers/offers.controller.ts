@@ -14,11 +14,11 @@ import { MailerService } from '../mailer/mailer.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { User } from '../users/user.entity';
 import { Wish } from '../wishes/wish.entity';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
-  ApiBearerAuth 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Offer } from './offer.entity';
 
@@ -34,17 +34,26 @@ export class OffersController {
   ) {}
 
   @ApiOperation({ summary: 'Создание предложения о вкладе в подарок' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Предложение успешно создано',
-    type: Offer
+    type: Offer,
   })
   @ApiResponse({ status: 400, description: 'Некорректные данные' })
   @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
-  @ApiResponse({ status: 403, description: 'Нельзя скидываться на собственные подарки' })
-  @ApiResponse({ status: 409, description: 'Сумма превышает стоимость подарка' })
+  @ApiResponse({
+    status: 403,
+    description: 'Нельзя скидываться на собственные подарки',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Сумма превышает стоимость подарка',
+  })
   @Post()
-  async submitContribution(@Body() contributionData: CreateOfferDto, @Request() req) {
+  async submitContribution(
+    @Body() contributionData: CreateOfferDto,
+    @Request() req,
+  ) {
     const targetWish = await this.wishService.getWishById({
       where: { id: contributionData.item },
     });
@@ -64,7 +73,7 @@ export class OffersController {
       amount: contributionData.amount,
       hidden: contributionData.hidden,
       user: { id: req.user.userId } as User,
-      item: { id: contributionData.item } as Wish
+      item: { id: contributionData.item } as Wish,
     };
 
     const savedContribution = await this.offerService.create(offerData);

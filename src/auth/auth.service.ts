@@ -25,9 +25,17 @@ export class AuthService {
     private cryptoService: HashService,
   ) {}
 
-  async verifyCredentials(username: string, password: string): Promise<Omit<User, 'password'> | null> {
-    const userAccount = await this.userService.getUserByQuery({ where: { username } });
-    if (userAccount && (await this.cryptoService.comparePassword(password, userAccount.password))) {
+  async verifyCredentials(
+    username: string,
+    password: string,
+  ): Promise<Omit<User, 'password'> | null> {
+    const userAccount = await this.userService.getUserByQuery({
+      where: { username },
+    });
+    if (
+      userAccount &&
+      (await this.cryptoService.comparePassword(password, userAccount.password))
+    ) {
       const { ...userDetails } = userAccount;
       return userDetails;
     }
@@ -42,7 +50,9 @@ export class AuthService {
   }
 
   async createAccount(accountData: UserCredentials) {
-    accountData.password = await this.cryptoService.hashPassword(accountData.password);
+    accountData.password = await this.cryptoService.hashPassword(
+      accountData.password,
+    );
     return this.userService.registerUser(accountData);
   }
 }

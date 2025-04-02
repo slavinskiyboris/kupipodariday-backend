@@ -13,7 +13,9 @@ import { HashService } from './hash.service';
     forwardRef(() => UsersModule),
     PassportModule,
     JwtModule.register({
-      secret: process.env.SECRET_KEY || 'a7sf8d7f6s5df6789as4df6as5df76a5sdf67s6df786sdf786asdf',
+      secret:
+        process.env.SECRET_KEY ||
+        'a7sf8d7f6s5df6789as4df6as5df76a5sdf67s6df786sdf786asdf',
       signOptions: { expiresIn: '60m' },
     }),
   ],

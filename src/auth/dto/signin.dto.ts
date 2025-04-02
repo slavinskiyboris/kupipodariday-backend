@@ -9,4 +9,4 @@ export class SigninDto {
   @IsString({ message: 'Пароль должен быть строкой' })
   @MinLength(6, { message: 'Пароль должен содержать как минимум 6 символов' })
   password: string;
-} 
+}

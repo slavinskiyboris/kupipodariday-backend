@@ -13,7 +13,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class User {
-  @ApiProperty({ example: 1, description: 'Уникальный идентификатор пользователя' })
+  @ApiProperty({
+    example: 1,
+    description: 'Уникальный идентификатор пользователя',
+  })
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -21,15 +24,24 @@ export class User {
   @Column({ unique: true, length: 30 })
   username: string;
 
-  @ApiProperty({ example: 'Я люблю дарить подарки', description: 'Информация о пользователе' })
+  @ApiProperty({
+    example: 'Я люблю дарить подарки',
+    description: 'Информация о пользователе',
+  })
   @Column({ length: 200, default: 'Пока ничего не рассказал о себе' })
   about: string;
 
-  @ApiProperty({ example: 'https://i.pravatar.cc/300', description: 'Ссылка на аватар' })
+  @ApiProperty({
+    example: 'https://i.pravatar.cc/300',
+    description: 'Ссылка на аватар',
+  })
   @Column({ default: 'https://i.pravatar.cc/300' })
   avatar: string;
 
-  @ApiProperty({ example: 'user@example.com', description: 'Email пользователя' })
+  @ApiProperty({
+    example: 'user@example.com',
+    description: 'Email пользователя',
+  })
   @Column({ unique: true })
   email: string;
 
@@ -37,23 +49,29 @@ export class User {
   @Column()
   password: string;
 
-  @ApiProperty({ example: '2023-01-01T00:00:00Z', description: 'Дата создания' })
+  @ApiProperty({
+    example: '2023-01-01T00:00:00Z',
+    description: 'Дата создания',
+  })
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({ example: '2023-01-02T00:00:00Z', description: 'Дата обновления' })
+  @ApiProperty({
+    example: '2023-01-02T00:00:00Z',
+    description: 'Дата обновления',
+  })
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ApiProperty({ description: 'Подарки пользователя' })
+  @ApiProperty({ description: 'Подарки пользователя', type: () => [Wish] })
   @OneToMany(() => Wish, (wish) => wish.owner, { lazy: true })
   wishes: Wish[];
 
-  @ApiProperty({ description: 'Предложения пользователя' })
+  @ApiProperty({ description: 'Предложения пользователя', type: () => [Offer] })
   @OneToMany(() => Offer, (offer) => offer.user, { lazy: true })
   offers: Offer[];
 
-  @ApiProperty({ description: 'Списки подарков пользователя' })
+  @ApiProperty({ description: 'Списки подарков пользователя', type: () => [Wishlist] })
   @OneToMany(() => Wishlist, (wishlist) => wishlist.owner, { lazy: true })
   wishlists: Wishlist[];
 }

@@ -20,7 +20,9 @@ export class WishesService {
     return this.wishRepo.findOne(searchParams);
   }
 
-  async getAllWishes(searchParams: FindManyOptions<Wish> = {}): Promise<Wish[]> {
+  async getAllWishes(
+    searchParams: FindManyOptions<Wish> = {},
+  ): Promise<Wish[]> {
     return this.wishRepo.find(searchParams);
   }
 

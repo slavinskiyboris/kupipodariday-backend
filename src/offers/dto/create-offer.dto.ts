@@ -1,9 +1,9 @@
-import { 
-  IsNotEmpty, 
-  IsNumber, 
-  Min, 
-  IsBoolean, 
-  IsOptional 
+import {
+  IsNotEmpty,
+  IsNumber,
+  Min,
+  IsBoolean,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateOfferDto {
@@ -19,4 +19,4 @@ export class CreateOfferDto {
   @IsOptional()
   @IsBoolean({ message: 'Скрытие имени должно быть логическим значением' })
   hidden?: boolean;
-} 
+}
