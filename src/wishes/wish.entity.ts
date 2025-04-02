@@ -38,7 +38,7 @@ export class Wish {
   raised: number;
 
   @ApiProperty({ description: 'Владелец подарка' })
-  @ManyToOne(() => User, (user) => user.wishes)
+  @ManyToOne(() => User, (user) => user.wishes, { lazy: true })
   owner: User;
 
   @ApiProperty({ example: 'Очень хочу новый Iphone', description: 'Описание подарка' })
@@ -46,7 +46,7 @@ export class Wish {
   description: string;
 
   @ApiProperty({ description: 'Предложения по скидыванию на подарок' })
-  @OneToMany(() => Offer, (offer) => offer.item)
+  @OneToMany(() => Offer, (offer) => offer.item, { lazy: true })
   offers: Offer[];
 
   @ApiProperty({ example: 5, description: 'Количество копирований подарка' })

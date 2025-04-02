@@ -1,14 +1,12 @@
 import {
   Controller,
   Get,
-  Put,
+  Patch,
   Body,
   Param,
   Request,
   UseGuards,
-  Query,
-  UnauthorizedException,
-  Delete,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -20,7 +18,6 @@ import {
   ApiOperation, 
   ApiResponse, 
   ApiParam, 
-  ApiQuery, 
   ApiBearerAuth 
 } from '@nestjs/swagger';
 import { User } from './user.entity';
@@ -38,7 +35,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Получение информации о текущем пользователе' })
   @ApiResponse({ 
     status: 200, 
-    description: 'Информация о пользователе',
+    description: 'Профиль успешно обновлен',
     type: User
   })
   @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
@@ -47,11 +44,26 @@ export class UsersController {
     return this.userService.getUserByQuery({ where: { id: req.user.userId } });
   }
 
+  @ApiOperation({ summary: 'Получение списка подарков пользователя' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Список подарков пользователя',
+  })
+  @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
+  @Get('me/wishes')
+  async getCurrentUserWishes(@Request() req) {
+    const user = await this.userService.getUserByQuery({ 
+      where: { id: req.user.userId },
+      relations: ['wishes']
+    });
+    return user.wishes;
+  }
+
   @ApiOperation({ summary: 'Получение информации о пользователе по имени' })
   @ApiParam({ name: 'username', description: 'Имя пользователя' })
   @ApiResponse({ 
     status: 200, 
-    description: 'Информация о пользователе',
+    description: 'Список пользователей',
     type: User
   })
   @ApiResponse({ status: 404, description: 'Пользователь не найден' })
@@ -59,6 +71,23 @@ export class UsersController {
   @Get(':username')
   async fetchUserByName(@Param('username') username: string) {
     return this.userService.getUserByQuery({ where: { username } });
+  }
+
+  @ApiOperation({ summary: 'Получение списка подарков по имени пользователя' })
+  @ApiParam({ name: 'username', description: 'Имя пользователя' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Список подарков пользователя',
+  })
+  @ApiResponse({ status: 404, description: 'Пользователь не найден' })
+  @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
+  @Get(':username/wishes')
+  async getUserWishes(@Param('username') username: string) {
+    const user = await this.userService.getUserByQuery({ 
+      where: { username },
+      relations: ['wishes']
+    });
+    return user.wishes;
   }
 
   @ApiOperation({ summary: 'Обновление профиля текущего пользователя' })
@@ -70,7 +99,7 @@ export class UsersController {
   @ApiResponse({ status: 400, description: 'Некорректные данные' })
   @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
   @ApiResponse({ status: 409, description: 'Данные (email, username) уже используются' })
-  @Put('me')
+  @Patch('me')
   async updateMyProfile(@Request() req, @Body() profileChanges: UpdateUserDto) {
     await this.userService.validateUniqueFields(req.user.userId, profileChanges);
 
@@ -85,61 +114,14 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Поиск пользователей' })
-  @ApiQuery({ name: 'query', description: 'Поисковый запрос' })
   @ApiResponse({ 
     status: 200, 
     description: 'Список пользователей',
     type: [User]
   })
   @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
-  @Get()
-  async searchAccounts(@Query() searchParams: UserSearchDto) {
+  @Post('find')
+  async searchAccounts(@Body() searchParams: UserSearchDto) {
     return this.userService.searchUsers(searchParams.query);
-  }
-
-  @ApiOperation({ summary: 'Обновление профиля по ID' })
-  @ApiParam({ name: 'id', description: 'ID пользователя' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Профиль успешно обновлен',
-    type: User
-  })
-  @ApiResponse({ status: 400, description: 'Некорректные данные' })
-  @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
-  @ApiResponse({ status: 403, description: 'Доступ запрещен' })
-  @ApiResponse({ status: 409, description: 'Данные (email, username) уже используются' })
-  @Put(':id')
-  async updateUserAccount(
-    @Param('id') userId: number,
-    @Body() profileChanges: UpdateUserDto,
-    @Request() req,
-  ) {
-    if (userId !== req.user.userId) {
-      throw new UnauthorizedException('You can only edit your own profile');
-    }
-
-    await this.userService.validateUniqueFields(userId, profileChanges);
-
-    if (profileChanges.password) {
-      profileChanges.password = await this.hashService.hashPassword(
-        profileChanges.password,
-      );
-    }
-
-    await this.userService.editUser(userId, profileChanges);
-    return this.userService.getUserByQuery({ where: { id: userId } });
-  }
-
-  @ApiOperation({ summary: 'Удаление пользователя' })
-  @ApiParam({ name: 'id', description: 'ID пользователя' })
-  @ApiResponse({ status: 200, description: 'Пользователь удален' })
-  @ApiResponse({ status: 401, description: 'Пользователь не авторизован' })
-  @ApiResponse({ status: 403, description: 'Доступ запрещен' })
-  @Delete(':id')
-  async removeAccount(@Param('id') userId: number, @Request() req) {
-    if (userId !== req.user.userId) {
-      throw new UnauthorizedException('You can only delete your own profile');
-    }
-    await this.userService.deleteUser(userId);
   }
 }

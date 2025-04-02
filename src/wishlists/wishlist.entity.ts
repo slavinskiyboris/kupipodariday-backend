@@ -31,12 +31,12 @@ export class Wishlist {
   image: string;
 
   @ApiProperty({ description: 'Подарки в списке' })
-  @ManyToMany(() => Wish)
+  @ManyToMany(() => Wish, { lazy: true })
   @JoinTable()
   items: Wish[];
 
   @ApiProperty({ description: 'Владелец списка подарков' })
-  @ManyToOne(() => User, (user) => user.wishlists)
+  @ManyToOne(() => User, (user) => user.wishlists, { lazy: true })
   owner: User;
 
   @ApiProperty({ example: '2023-01-01T00:00:00Z', description: 'Дата создания' })

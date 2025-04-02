@@ -46,14 +46,14 @@ export class User {
   updatedAt: Date;
 
   @ApiProperty({ description: 'Подарки пользователя' })
-  @OneToMany(() => Wish, (wish) => wish.owner)
+  @OneToMany(() => Wish, (wish) => wish.owner, { lazy: true })
   wishes: Wish[];
 
   @ApiProperty({ description: 'Предложения пользователя' })
-  @OneToMany(() => Offer, (offer) => offer.user)
+  @OneToMany(() => Offer, (offer) => offer.user, { lazy: true })
   offers: Offer[];
 
   @ApiProperty({ description: 'Списки подарков пользователя' })
-  @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.owner, { lazy: true })
   wishlists: Wishlist[];
 }

@@ -17,11 +17,11 @@ export class Offer {
   id: number;
 
   @ApiProperty({ description: 'Пользователь, сделавший предложение' })
-  @ManyToOne(() => User, (user) => user.offers)
+  @ManyToOne(() => User, (user) => user.offers, { lazy: true })
   user: User;
 
   @ApiProperty({ description: 'Подарок, на который скидываются' })
-  @ManyToOne(() => Wish, (wish) => wish.offers)
+  @ManyToOne(() => Wish, (wish) => wish.offers, { lazy: true })
   item: Wish;
 
   @ApiProperty({ example: 1000.00, description: 'Сумма взноса' })
